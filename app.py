@@ -5,7 +5,7 @@ import streamlit as st
 st.set_page_config(layout="wide", page_title="Consulta de Vagas")
 
 # --- TÍTULO E DESCRIÇÃO ---
-st.title("Consulta de Vagas por Apartamento")
+st.title("Consulta de Vagas por Apartamento - 2020 a 2024")
 st.markdown("Selecione sua torre e apartamento na barra lateral para verificar o tipo de vaga (coberta ou descoberta) para cada ano.")
 
 # --- CARREGAMENTO DOS DADOS ---
@@ -77,9 +77,9 @@ if df is not None:
 
     if not resultado.empty:
         dados_vaga = resultado.iloc[0]
-        colunas_ano = ['2020', '2021', '2022', '2023']
-        col1, col2, col3, col4 = st.columns(4)
-        colunas_st = [col1, col2, col3, col4]
+        colunas_ano = ['2020', '2021', '2022', '2023','2024']
+        col1, col2, col3, col4,col5 = st.columns(5)
+        colunas_st = [col1, col2, col3, col4,col5]
 
         for i, col_ano in enumerate(colunas_ano, 1):
             with colunas_st[i-1]:
@@ -96,7 +96,7 @@ if df is not None:
 
     with st.expander("Clique para ver a análise de vagas cobertas"):
         # --- LÓGICA DA ANÁLISE ---
-        colunas_ano = ['2020', '2021', '2022', '2023']
+        colunas_ano = ['2020', '2021', '2022', '2023','2024']
         
         # Cria uma cópia do DataFrame para a análise
         df_analise = df.copy()
