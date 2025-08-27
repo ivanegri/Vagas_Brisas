@@ -69,25 +69,25 @@ if df is not None:
 
     st.divider()
 
-    # --- EXIBIÇÃO DOS RESULTADOS ---
-    st.header(f"Resultado para: Torre {torre_selecionada} - Apto {apto_selecionado}")
-
     # Filtra o DataFrame para encontrar a linha correspondente à seleção do usuário
     resultado = df.loc[(df['Torre'] == torre_selecionada) & (df['Apto'] == apto_selecionado)]
 
+    # --- EXIBIÇÃO DOS RESULTADOS ---
     if not resultado.empty:
         dados_vaga = resultado.iloc[0]
+        tipo_vaga_unidade = dados_vaga.get('Tipo Vaga', '')  # Pega o tipo de vaga (ex: 'Simples', 'Dupla')
+        st.header(f"Resultado para: Torre {torre_selecionada} - Apto {apto_selecionado} ({tipo_vaga_unidade})")
+
         colunas_ano = ['2020', '2021', '2022', '2023','2024']
         col1, col2, col3, col4,col5 = st.columns(5)
         colunas_st = [col1, col2, col3, col4,col5]
 
         for i, col_ano in enumerate(colunas_ano, 1):
             with colunas_st[i-1]:
-                # Adicionamos .strip() para remover espaços em branco no início ou fim do texto
                 tipo_vaga = str(dados_vaga[col_ano]).strip()
                 st.metric(label=f"{i}° Ano do Sorteio", value=tipo_vaga)
-                
     else:
+        st.header(f"Resultado para: Torre {torre_selecionada} - Apto {apto_selecionado}")
         st.warning("Nenhuma informação encontrada para a combinação de Torre e Apartamento selecionada.")
 
     # --- SEÇÃO DE ANÁLISE GERAL ---
@@ -118,7 +118,7 @@ if df is not None:
             if not mais_de_uma_coberta.empty:
                 # Formata a saída para ser mais legível
                 unidades_sortudas = mais_de_uma_coberta.apply(
-                    lambda row: f"Torre {row['Torre']} Apto {row['Apto']} ({row['contagem_cobertas']} vezes)", 
+                    lambda row: f"Torre {row['Torre']} Apto {row['Apto']} ({row.get('Tipo Vaga', '')}) - {row['contagem_cobertas']} vezes",
                     axis=1
                 ).reset_index(drop=True)
                 st.dataframe(unidades_sortudas, use_container_width=True)
@@ -130,7 +130,11 @@ if df is not None:
             nenhuma_coberta = df_analise[df_analise['contagem_cobertas'] == 0].sort_values(by=['Torre', 'Apto'])
             st.subheader("Unidades que Nunca Tiveram Vaga Coberta")
             if not nenhuma_coberta.empty:
-                st.dataframe(nenhuma_coberta[['Torre', 'Apto']], use_container_width=True)
+                cols_to_show = ['Torre', 'Apto']
+                # Adiciona a coluna 'Tipo Vaga' se ela existir no DataFrame
+                if 'Tipo Vaga' in nenhuma_coberta.columns:
+                    cols_to_show.append('Tipo Vaga')
+                st.dataframe(nenhuma_coberta[cols_to_show], use_container_width=True)
             else:
                 st.info("Todas as unidades foram contempladas com vaga coberta ao menos uma vez.")
 else:
